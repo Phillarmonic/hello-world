@@ -1,4 +1,4 @@
-name: "Backend: Base PHP container"
+name: "Build and push HTTP server"
 
 on:
   workflow_dispatch:

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container Hello World</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .env-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .env-table th, .env-table td {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .env-table tr:hover {
+            background: #f5f5f5;
+        }
+        .env-value {
+            font-family: monospace;
+            word-break: break-all;
+        }
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 1.5rem;
+        }
+        .copy-button {
+            padding: 0.25rem 0.5rem;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .copy-button:hover {
+            background: #d0d0d0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>👋 Hello world, from a Container!</h1>
+    <h3>By <a href="https://github.com/Phillarmonic" target="_blank">Phillarmonic Software</a> 😊</h3>
+
+    <div class="info-box">
+        <h2>Container Information</h2>
+        <p><strong>Container Name:</strong> <span id="containerName">Loading...</span></p>
+        <!-- <p><strong>Server IP:</strong> <span id="serverIP">Loading...</span></p> -->
+        <p><strong>Your IP:</strong> <span id="clientIP">Loading...</span></p>
+    </div>
+    <div class="info-box">
+        <h2>Environment Variables</h2>
+        <button onclick="copyEnvVars()" class="copy-button">Copy as JSON</button>
+        <table class="env-table">
+            <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody id="envVarsBody">
+            <tr>
+                <td colspan="2">Loading...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let envVarsData = [];
+
+    // Function to get container name
+    fetch('/container-name')
+        .then(response => response.text())
+        .then(name => {
+            document.getElementById('containerName').textContent = name || 'Unknown';
+        })
+        .catch(() => {
+            document.getElementById('containerName').textContent = 'Not Available';
+        });
+
+    // Function to get server IP
+    fetch('/server-ip')
+        .then(response => response.text())
+        .then(ip => {
+            document.getElementById('serverIP').textContent = ip || 'Unknown';
+        })
+        .catch(() => {
+            document.getElementById('serverIP').textContent = 'Not Available';
+        });
+
+    // Function to get client IP
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('clientIP').textContent = data.ip;
+        })
+        .catch(() => {
+            document.getElementById('clientIP').textContent = 'Could not determine';
+        });
+
+    // Function to get environment variables
+    fetch('/env-vars')
+        .then(response => response.json())
+        .then(data => {
+            envVarsData = data;
+            const tbody = document.getElementById('envVarsBody');
+            tbody.innerHTML = data.map(env => `
+                    <tr>
+                        <td>${env.key}</td>
+                        <td class="env-value">${env.value}</td>
+                    </tr>
+                `).join('');
+        })
+        .catch(() => {
+            document.getElementById('envVarsBody').innerHTML = `
+                    <tr>
+                        <td colspan="2">Failed to load environment variables</td>
+                    </tr>
+                `;
+        });
+
+    // Function to copy env vars as JSON
+    function copyEnvVars() {
+        const json = JSON.stringify(envVarsData, null, 2);
+        navigator.clipboard.writeText(json).then(() => {
+            alert('Environment variables copied to clipboard!');
+        }).catch(() => {
+            alert('Failed to copy to clipboard');
+        });
+    }
+</script>
+</body>
+</html>

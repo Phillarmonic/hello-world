@@ -26,12 +26,11 @@ Then open your browser at `http://localhost:8080`
 Create a `docker-compose.yml`:
 
 ```yaml
-version: '3.8'
 services:
   webserver:
     image: phillarmonic/hello-world
     ports:
-      - "8080:8080"
+      - "80:80"
     environment:
       - SERVER_IP=192.168.1.100  # Optional: Set your server IP
       - CUSTOM_VAR=test_value    # Add any custom environment variables
@@ -62,7 +61,7 @@ git clone https://github.com/phillarmonic/hello-world
 docker build -t phillarmonic/hello-world .
 
 # Run the container
-docker run -d -p 8080:8080 phillarmonic/hello-world
+docker run -d -p 80:80 phillarmonic/hello-world
 ```
 
 ## Security Features
